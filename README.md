@@ -118,7 +118,7 @@ npm i babel-plugin-import -D
 
 在.babelrc 或 babel.config.js 中添加配置：
 
-```
+```js
 {
   "plugins": [
     [
@@ -242,7 +242,7 @@ npm i postcss-pxtorem lib-flexible -D
 
 #### PostCSS 示例配置
 
-```
+```js
 // postcss.config.js  没有的话就创建 postcss.config.js 
 module.exports = {
   plugins: {
@@ -278,9 +278,11 @@ import 'lib-flexible/flexible'
 
 ### 配置 tabbar 导航
 
+#### tabbar 配置
+
 utils/vant.js  引入需要的组件
 
-```
+```js
 import Vue from 'vue'
 import { Button, Icon, Tabbar, TabbarItem } from 'vant'
 
@@ -292,21 +294,21 @@ Vue.use(Button)
 
 创建公共组件 Footer.vue
 
-```
+```vue
 <template>
     <div class="footer">
         <van-tabbar v-model="active" active-color="#1FAEAE" inactive-color="#000000">
-            <van-tabbar-item icon="home-o">
-                <router-link to="/home">首页</router-link>
+            <van-tabbar-item icon="home-o" to="/home">
+                首页
             </van-tabbar-item>
-            <van-tabbar-item icon="search">
-                <router-link to="/list">分类</router-link>
+            <van-tabbar-item icon="search" to="/list">
+                分类
             </van-tabbar-item>
-            <van-tabbar-item icon="friends-o">
-                <router-link to="/cart">购物车</router-link>
+            <van-tabbar-item icon="friends-o" to="/cart">
+                购物车
             </van-tabbar-item>
-            <van-tabbar-item icon="setting-o">
-                <router-link to="/my">我的</router-link>
+            <van-tabbar-item icon="setting-o" to="/my">
+                我的
             </van-tabbar-item>
         </van-tabbar>
     </div>
@@ -340,7 +342,7 @@ export default {
 
 App.vue 中使用 Footer组件
 
-```
+```vue
 <template>
   <div id="app">
     <router-view/>
@@ -361,5 +363,135 @@ export default {
 <style lang="less">
 
 </style>
+```
+
+#### tabbar导航页面显示控制
+
+router/index.js
+
+```js
+import Vue from 'vue'
+import VueRouter from 'vue-router'
+
+Vue.use(VueRouter)
+
+const routes = [
+  {
+    path: '/home',
+    name: 'Home',
+    meta:{//路由元信息
+      isshow:true
+    },
+    component: () => import('../views/Home.vue')
+  },
+  {
+    path: '/my',
+    name: 'My',
+    meta:{//路由元信息
+      isshow:true
+    },
+    component: () => import('../views/My.vue')
+  },
+  {
+    path: '/list',
+    name: 'List',
+    meta:{//路由元信息
+      isshow:true
+    },
+    component: () => import('../views/List.vue')
+  },
+  {
+    path: '/cart',
+    name: 'Cart',
+    meta:{//路由元信息
+      isshow:true
+    },
+    component: () => import('../views/Cart.vue')
+  },
+  {
+    path: '/login',
+    name: 'Login',
+    component: () => import('../views/Login.vue')
+  },
+  {
+    path: '*',
+    redirect: '/home'
+  }
+]
+
+const router = new VueRouter({
+  routes
+})
+
+export default router
+```
+
+### 封装api
+
+#### 配置跨域：vue.config.js
+
+```js
+module.exports={
+	devServer:{
+		//proxy:"http://backend-api-01.newbee.ltd"//支配配置一个跨域
+		proxy:{
+			"/api":{
+				target:"http://backend-api-01.newbee.ltd"
+			}
+		}
+	}
+}
+```
+
+#### api/http.js
+
+```js
+import axios from "axios";
+import {Notify} from "vant";
+import router from '../router/index.js';
+
+axios.defaults.baseURL =process.env.NODE_ENV == 'production' ? 'http://backend-api-01.newbee.ltd/api/v1' : '/api/v1';
+
+// 添加请求拦截器
+axios.interceptors.request.use(function (config) {
+	let token=localStorage.getItem("xfdata");
+	if(token){
+		config.headers.token=token;
+	}
+  return config;
+}, function (error) {
+  // 对请求错误做些什么
+  return Promise.reject(error);
+});
+
+axios.interceptors.response.use(response => {
+	if(+response.data.resultCode!=200){
+		//取消掉详情页面的重复弹框
+		if(response.data.message.includes("已存在")){
+			return response.data;
+		}
+		
+		Notify({ type: 'danger', message: response.data.message||"系统繁忙" });
+		if(+response.data.resultCode==416){//跳转到 登录页面，去登录
+			router.push("/login?needback=true");
+		}
+	}
+	return response.data;
+}, reason => {
+    console.log('当前网络繁忙，请您稍后再试~');
+    return Promise.reject(reason);
+});
+
+export default axios;
+```
+
+#### api/index.js
+
+```js
+import http from "./http";
+
+export function test() {
+    return http.post('/shop-cart')
+  }
 ```
 
