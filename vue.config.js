@@ -6,12 +6,8 @@ module.exports = {
 	devServer: {
 		proxy: {
 			'/api': {
-				target: "http://backend-api-01.newbee.ltd/api/v1",
-				changeOrigin: true,
-				pathRewrite: {
-					'^/api': ''
-				}
+				target: "http://backend-api-01.newbee.ltd",
 			}
 		}
 	}
-};
+}

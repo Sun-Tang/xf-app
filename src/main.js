@@ -4,7 +4,7 @@ import router from './router'
 import store from './store'
 import './utils/vant'
 import 'lib-flexible/flexible'
-import api from './api'
+import api from '@/api'
 
 Vue.config.productionTip = false
 Vue.prototype.$api = api

@@ -31,7 +31,7 @@ export default {
   methods: {
     onSave(content) {
       console.log(content);
-      this.$api.detailAddress({ ...content }).then((res) => {
+      this.$api.addAddress({ content }).then((res) => {
         console.log(res);
       });
       /*   let {

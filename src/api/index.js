@@ -65,8 +65,8 @@ const detailAddress = () => {
     return http.get('/api/address')
 }
 //新增地址
-const addAddress = () => {
-    return http.post('/api/address')
+export function addAddress(data) {
+    return http.post('/address', data)
 }
 //修改地址
 const updateAddress = () => {
