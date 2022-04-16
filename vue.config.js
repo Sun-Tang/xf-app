@@ -1,10 +1,13 @@
+const env = process.env.NODE_ENV;
 module.exports = {
-    devServer: {
-        //proxy:"http://backend-api-01.newbee.ltd"//支配配置一个跨域
-        proxy: {
-            "/api": {
-                target: "http://backend-api-01.newbee.ltd",
-            },
-        },
-    },
-};
+	publicPath: './',
+	lintOnSave: env !== 'production',
+	productionSourceMap: false,
+	devServer: {
+		proxy: {
+			'/api': {
+				target: "http://backend-api-01.newbee.ltd",
+			}
+		}
+	}
+}
