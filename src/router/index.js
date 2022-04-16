@@ -3,36 +3,35 @@ import VueRouter from 'vue-router'
 
 Vue.use(VueRouter)
 
-const routes = [
-  {
+const routes = [{
     path: '/home',
     name: 'Home',
-    meta:{//路由元信息
-      isshow:true
+    meta: { //路由元信息
+      isshow: true
     },
     component: () => import('../views/Home.vue')
   },
   {
     path: '/my',
     name: 'My',
-    meta:{//路由元信息
-      isshow:true
+    meta: { //路由元信息
+      isshow: true
     },
     component: () => import('../views/My.vue')
   },
   {
     path: '/list',
     name: 'List',
-    meta:{//路由元信息
-      isshow:true
+    meta: { //路由元信息
+      isshow: true
     },
     component: () => import('../views/List.vue')
   },
   {
     path: '/cart',
     name: 'Cart',
-    meta:{//路由元信息
-      isshow:true
+    meta: { //路由元信息
+      isshow: true
     },
     component: () => import('../views/Cart.vue')
   },
@@ -40,6 +39,21 @@ const routes = [
     path: '/login',
     name: 'Login',
     component: () => import('../views/Login.vue')
+  },
+  {
+    path: '/myaddress',
+    name: 'MyAddress',
+    component: () => import('../views/MyAddress.vue')
+  },
+  {
+    path: '/myorder',
+    name: 'MyOrder',
+    component: () => import('../views/MyOrder.vue')
+  },
+  {
+    path: '/addaddress',
+    name: 'AddAddress',
+    component: () => import('../views/AddAddress.vue')
   },
   {
     path: '*',
