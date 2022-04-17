@@ -1,6 +1,9 @@
 <template>
     <div class="login">
         <!-- nav bar -->
+        <!-- 
+            +
+         -->
         <van-nav-bar :title="isLogin?'登录':'注册'"
                      left-arrow
                      @click-left="$router.back()">
@@ -210,8 +213,6 @@
             justify-content: space-around;
             padding: 0 30px;
             margin-top: 10px;
-            // background-color: pink;
-
             .verify-code {
                 display: flex;
                 justify-content: space-around;
