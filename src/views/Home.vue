@@ -2,15 +2,22 @@
     <div class="home">
         <div class="hd_wrap"
              :class="{scroll:flag}">
-            <i class="iconfont icon-caidan"></i>
+            <i class="iconfont icon-caidan"
+               @click="$router.push('/list')"></i>
             <div class="hd_search">
                 <span class="hd_title">新蜂商城</span>
                 <span class="hd_input">快 乐 就 是 买 买 买~</span>
             </div>
-            <span class="login">登录</span>
+            <span class="login"
+                  v-if="!isLogin"
+                  @click="$router.push('/login')">登录</span>
+            <van-icon v-else
+                      name="user-circle-o"
+                      @click="$router.push('/my')" />
         </div>
         <div class="con_wrap"
              ref="con">
+            <!-- 轮播图 -->
             <div class="swiper_wrap">
                 <van-swipe :autoplay="3000"
                            indicator-color="#52aaad">
@@ -22,6 +29,7 @@
                     </van-swipe-item>
                 </van-swipe>
             </div>
+            <!-- 导航区 -->
             <div class="nav_bar">
                 <van-grid :border="false"
                           :column-num="5">
@@ -41,7 +49,7 @@
                              v-for="(item1, index1) in item.subGoods"
                              :key="index1"
                              @click="gotoDetail(item1.goodsId)">
-                            <img :src="item1.goodsCoverImg">
+                            <img v-lazy="item1.goodsCoverImg">
                             <p class="goods_name van-multi-ellipsis--l2">{{item1.goodsName}}</p>
                             <p class="sellingPrice">￥&nbsp;{{item1.sellingPrice}}</p>
                         </div>
@@ -57,7 +65,9 @@
         name: "home",
         data() {
             return {
-                //此标识控制，当页面滚动到一定位置时，头部背景色改变
+                // 是否登录标识
+                isLogin: false,
+                //此标识控制，当页面滚动到一定位置时，动态添加类名，使头部背景色改变
                 flag: false,
                 // 轮播图
                 carousels: [],
@@ -159,11 +169,17 @@
             },
             // 跳转到详情页
             gotoDetail(goodsId) {
-                this.$router.push("/my?goodsId=" + goodsId);
+                this.$router.push("/detail?goodsId=" + goodsId);
+            },
+            whetherLogin() {
+                // 判断用户是否登录，若获取不到token，说明没登录
+                let tk = localStorage.getItem("xfdata");
+                if (tk) this.isLogin = true;
             },
         },
         created() {
             this.getIndexInfo();
+            this.whetherLogin();
         },
         mounted() {
             // 添加监听
@@ -172,6 +188,10 @@
         beforeDestroy() {
             // 移除监听
             this.$refs.con.removeEventListener("scroll", this.showScroll);
+        },
+        activated() {
+            // 首页再次被激活时，重新判断下用户是否登录
+            this.whetherLogin();
         },
         //在页面离开时记录滚动位置
         beforeRouteLeave(to, from, next) {
@@ -196,6 +216,7 @@
     .home {
         background-color: #f9f9f9;
         height: calc(100vh - 110px);
+        // 头部区域
         .hd_wrap {
             box-sizing: border-box;
             background-color: #fff;
@@ -211,7 +232,7 @@
                 flex: 1;
                 text-align: center;
             }
-
+            // 搜索
             .hd_search {
                 flex: 8;
                 position: relative;
@@ -259,6 +280,7 @@
                 color: #fff;
             }
         }
+        // 内容区域
         .con_wrap {
             height: 100%;
             overflow-y: auto;

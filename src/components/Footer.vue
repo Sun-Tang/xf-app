@@ -29,15 +29,25 @@
         data() {
             return {
                 active: 0,
-                // 路由对象
+                // tab栏路由对象
                 routerArr: ["/home", "/list", "/cart", "/my"],
             };
         },
+        methods: {
+            setActiveRoute() {
+                //当前激活的路由，设置字体颜色高亮
+                this.routerArr.forEach((item, index) => {
+                    if (item === this.$route.path) this.active = index;
+                });
+            },
+        },
+        watch: {
+            $route() {
+                this.setActiveRoute();
+            },
+        },
         created() {
-            //当前激活的路由，设置字体颜色高亮
-            this.routerArr.forEach((item, index) => {
-                if (item === this.$route.path) this.active = index;
-            });
+            this.setActiveRoute();
         },
     };
 </script>

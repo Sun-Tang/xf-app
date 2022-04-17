@@ -1,12 +1,11 @@
 <template>
-  <div class="list">
-    list
-  </div>
+    <div class="list">
+        list
+    </div>
 </template>
 
 <script>
-
-export default {
-  name: 'List'
-}
+    export default {
+        name: "List",
+    };
 </script>
