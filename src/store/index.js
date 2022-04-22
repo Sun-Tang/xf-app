@@ -6,8 +6,14 @@ Vue.use(Vuex);
 export default new Vuex.Store({
     state: {
         isLoading: false,
+
     },
-    mutations: {},
-    actions: {},
+    mutations: {
+
+    },
+    actions: {
+
+    },
     modules: {},
+    getters: {}
 });

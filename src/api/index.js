@@ -11,6 +11,7 @@ function register(name, psw) {
         password: psw,
     });
 }
+
 //登录接口
 function login(name, psw) {
     return http.post("/user/login", {
@@ -23,82 +24,74 @@ function getIndexInfo() {
     return http.get("/index-infos");
 }
 
-//获取购物车
-const shopCart = () => {
+//购物车
+function shopCart() {
     return http.get('/shop-cart')
 }
-//我的订单管理--订单管理
+//全部订单列表
+function order(num, nums) {
+    return http.get('/order', {
+        params: {
+            pageNumber: num,
+            status: nums
+        }
+    })
+}
+//商品
+function cartList(data) {
+    return http.get('/shop-cart/settle', {
+        params: {
+            cartItemIds: data,
+        }
+    })
+}
 
-//获取全部订单
-const order = (pageNumber = 1) => {
-    return http.get('/order', {
-        params: {
-            pageNumber
-        }
+//生成订单
+function saveOrder(id, ids) {
+    return http.post('/saveOrder', {
+        addressId: id,
+        cartItemIds: ids,
     })
 }
-//获取待付款订单
-const payOrder = (pageNumber = 1, status = 0) => {
-    return http.get('/order', {
-        params: {
-            pageNumber,
-            status
-        }
-    })
 
-}
-//获取待确认订单
-const uncertainOrder = (pageNumber = 1, status = 1) => {
-    return http.get('/order', {
+//支付成功
+function paySuccess(data, num) {
+    return http.get('/paySuccess', {
         params: {
-            pageNumber,
-            status
+            orderNo: data,
+            payType: num
         }
     })
 }
-//获取待发货订单
-const unsendOrder = (pageNumber = 1, status = 2) => {
-    return http.get('/order', {
-        params: {
-            pageNumber,
-            status
-        }
-    })
+//订单详情
+function orderDetail(id) {
+    return http.get('/order/' + id)
 }
-//获取已发货订单
-const sendOrder = (pageNumber = 1, status = 3) => {
-    return http.get('/order', {
-        params: {
-            pageNumber,
-            status
-        }
-    })
+//取消订单
+function deleteOrder(id) {
+    return http.put('/order/' + id + '/cancel')
 }
-//获取交易完成订单
-const sendedOrder = (pageNumber = 1, status = 4) => {
-    return http.get('/order', {
-        params: {
-            pageNumber,
-            status
-        }
-    })
-}
+
 
 //地址管理--地址列表
-const detailAddress = () => {
-    return http.get('/api/address')
+function detailAddress() {
+    return http.get('/address')
+}
+//id查地址信息
+function getAddressDetail(id) {
+    return http.get('/address/' + id)
 }
 //新增地址
-export function addAddress(data) {
+function addressList(data) {
     return http.post('/address', data)
 }
-//修改地址
-const updateAddress = () => {
-    return http.get('/api/address/7773')
+//编辑地址
+function updateAddress(obj) {
+    return http.put('/address', obj)
 }
 //删除地址
-const deleteAddress = () => {
-    return http.delete('/api/address/7773')
+function deleteAddress(id) {
+    return http.delete('/address/' + id)
 }
 export default {
     register,
@@ -107,14 +100,15 @@ export default {
     test,
     shopCart,
     order,
-    payOrder,
-    uncertainOrder,
-    unsendOrder,
-    sendOrder,
-    sendedOrder,
+    orderDetail,
+    deleteOrder,
     detailAddress,
-    addAddress,
+    getAddressDetail,
+    addressList,
     updateAddress,
-    deleteAddress
+    deleteAddress,
+    cartList,
+    saveOrder,
+    paySuccess
 
 }

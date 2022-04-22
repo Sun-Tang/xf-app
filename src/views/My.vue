@@ -1,14 +1,18 @@
 <template>
   <div>
-    <Head :title="title"></Head>
+    <van-nav-bar title="我的" left-arrow @click-left="onClick">
+      <template #right>
+        <van-icon name="ellipsis" />
+      </template>
+    </van-nav-bar>
     <div class="message">
       <div class="img">
         <img src="../assets/aaaddd.png" alt="" />
       </div>
       <ul>
-        <li>昵称 : xxx</li>
-        <li>登录名 : xxx</li>
-        <li>个性签名 ：随新所欲，蜂富多彩</li>
+        <li>昵称 : {{ myInfo.loginName }}</li>
+        <li>登录名 : {{ myInfo.nickName }}</li>
+        <li>个性签名 : {{ myInfo.introduceSign }}</li>
       </ul>
     </div>
     <van-cell title="我的订单" is-link to="/myorder" />
@@ -25,10 +29,21 @@ export default {
   data() {
     return {
       title: "我的",
+      myInfo: {},
     };
   },
   components: {
     Head,
+  },
+  methods: {
+    onClick() {
+      this.$router.push({ path: "/home" });
+    },
+  },
+  created() {
+    this.$api.test().then((res) => {
+      this.myInfo = res.data;
+    });
   },
 };
 </script>
@@ -65,5 +80,9 @@ export default {
       padding: 2px 0;
     }
   }
+}
+/deep/.van-icon-arrow-left,
+.van-icon-ellipsis {
+  color: #000;
 }
 </style>

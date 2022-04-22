@@ -5,7 +5,7 @@
       :area-list="areaList"
       show-set-default
       show-search-result
-      :search-result="searchResult"
+      :show-delete="isFlag"
       :area-columns-placeholder="['请选择', '请选择', '请选择']"
       @save="onSave"
       @delete="onDelete"
@@ -22,19 +22,29 @@ export default {
   name: "addAddress",
   data() {
     return {
+      id: "",
       title: "新增地址",
-      areaList,
-      searchResult: [],
+      //冻结地址列表，不能修改
+      areaList: Object.freeze(areaList),
       info: {},
+      isFlag: false,
     };
   },
   methods: {
-    onSave(content) {
-      console.log(content);
-      this.$api.addAddress({ content }).then((res) => {
-        console.log(res);
-      });
-      /*   let {
+    getAreaCode(area) {
+      area = area.replace(/区|县/, ""); // 肥乡
+      for (let k in areaList.county_list) {
+        if (areaList.county_list[k].includes(area)) {
+          return k;
+        }
+      }
+    },
+    //获取详细信息
+    async getDetail() {
+      //用data接收地址栏详细信息
+      //编辑
+      let data = await this.$api.getAddressDetail(this.id);
+      let {
         addressId,
         cityName,
         defaultFlag,
@@ -44,26 +54,79 @@ export default {
         userId,
         userName,
         userPhone,
-      } = info; */
+      } = data.data;
+      this.info = {
+        id: addressId,
+        name: userName,
+        tel: userPhone,
+        province: provinceName,
+        city: cityName,
+        county: regionName,
+        addressDetail: detailAddress,
+        postalCode: "100000",
+        areaCode: this.getAreaCode(regionName),
+        isDefault: defaultFlag,
+      };
     },
-    onDelete() {
-      Toast("delete");
-    },
-    onChangeDetail(val) {
-      if (val) {
-        this.searchResult = [
-          {
-            name: "黄龙万科中心",
-            address: "杭州市西湖区",
-          },
-        ];
+    onSave(obj) {
+      //保存
+      let {
+        addressDetail,
+        areaCode,
+        city,
+        country,
+        county,
+        id,
+        isDefault,
+        name,
+        postalCode,
+        province,
+        tel,
+      } = obj;
+      let option = {
+        cityName: city,
+        defaultFlag: isDefault ? 1 : 0,
+        detailAddress: addressDetail,
+        provinceName: province,
+        regionName: county,
+        userName: name,
+        userPhone: tel,
+        areaCode,
+        postalCode,
+      };
+      if (this.id) {
+        this.$api.updateAddress({ addressId: id, ...option }).then((res) => {
+          if (+res.resultCode == 200) {
+            this.$router.push("/myaddress");
+          }
+        });
       } else {
-        this.searchResult = [];
+        this.$api.addressList({ ...option }).then((res) => {
+          if (+res.resultCode == 200) {
+            this.$router.push("/myaddress");
+          }
+        });
       }
     },
+    onDelete() {
+      this.$api.deleteAddress(this.id).then((res) => {
+        if (+res.resultCode == 200) {
+          this.$router.push("/myaddress");
+        }
+      });
+    },
+    onChangeDetail() {},
   },
   components: {
     Head,
+  },
+  created() {
+    this.id = this.$route.query.addressId;
+    if (this.id) {
+      this.getDetail();
+      this.isFlag = true;
+      this.title = "编辑地址";
+    }
   },
 };
 </script>
